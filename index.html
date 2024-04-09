@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUMBER SYSTEM CONVERTER</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff; /* Light Mode Background */
+      color: #333333; /* Light Mode Text Color */
+      text-align: center; /* Justify content to the center */
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .dark-mode {
+      background-color:  #2C3E50; /* Dark Mode Background */
+      color: #ffffff;
+
+    }
+    .light-mode {
+      background-color: #34495E; /* Dark Mode Background */
+      color: #FFFFFF; /* Dark Mode Text Color */
+    }
+
+    header {
+      background-color: #2C3E50; /* Primary Color */
+      color: #FFFFFF; /* Text Color */
+      padding: 20px;
+      text-align: center;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px; /* Adjusted max-width for larger container */
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: left; /* Reset text-align for container contents */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .converter {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .converter label,
+    .converter select,
+    .converter input,
+    .converter button {
+      margin-bottom: 10px;
+      flex: 1 1 100%;
+    }
+
+    .converter select,
+    .converter input {
+      padding: 5px;
+      flex: 1 1 100%;
+      margin-right: 10px;
+    }
+
+    .converter button {
+      flex: 0 0 auto;
+      margin: 0 auto; /* Center the buttons horizontally */
+      margin-top: 10px; /* Add space between converted value and buttons */
+    }
+
+    button {
+      background-color: #4c7692; /* Secondary Color */
+      color: #FFFFFF; /* Text Color */
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+
+    #result {
+      width: 100%;
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      color: #0c0c0c;
+    }
+
+    footer {
+      background-color: #2C3E50; /* Primary Color */
+      color: #FFFFFF; /* Text Color */
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NUMBER SYSTEM CONVERTER</h1>
+    <button onclick="toggleDarkMode()">Dark Mode</button>
+    <button onclick="increaseFontSize()">Increase Font Size</button>
+    <button onclick="decreaseFontSize()">Decrease Font Size</button>
+  </header>
+  <main>
+    <div class="container">
+      <div class="converter">
+        <label for="from">From:</label>
+        <select id="from">
+          <option value="binary">Binary</option>
+          <option value="decimal">Decimal</option>
+          <option value="octal">Octal</option>
+          <option value="hexadecimal">Hexadecimal</option>
+        </select>
+        <label for="to">To:</label>
+        <select id="to">
+          <option value="binary">Binary</option>
+          <option value="decimal">Decimal</option>
+          <option value="octal">Octal</option>
+          <option value="hexadecimal">Hexadecimal</option>
+        </select>
+      </div>
+      <div class="converter">
+        <label for="inputValue">Enter Value:</label>
+        <input type="text" id="inputValue">
+        <div id="result"></div>
+        <button id="convertBtn">Convert</button>
+        <button id="toggleDigitGroupingBtn">Digit Grouping</button>
+        <button id="swapBtn">Swap</button>
+        <button id="resetBtn">Reset</button>
+        <button id="copyBtn">Copy</button>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <small>&copy; 2024 Number Converter</small>
+  </footer>
+  <script>
+    document.getElementById('convertBtn').addEventListener('click', convertNumber);
+    document.getElementById('resetBtn').addEventListener('click', resetFields);
+    document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+    document.getElementById('toggleDigitGroupingBtn').addEventListener('click', toggleDigitGrouping);
+    document.getElementById('swapBtn').addEventListener('click', swapConversion);
+
+    let digitGroupingEnabled = false;
+
+    function convertNumber() {
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+      const inputValue = document.getElementById('inputValue').value;
+
+      if (from === to) {
+        document.getElementById('result').innerHTML = "Please select different number systems.";
+        return;
+      }
+
+      let resultValue;
+
+      switch (from) {
+        case 'binary':
+          resultValue = parseInt(inputValue, 2);
+          break;
+        case 'decimal':
+          resultValue = parseInt(inputValue, 10);
+          break;
+        case 'octal':
+          resultValue = parseInt(inputValue, 8);
+          break;
+        case 'hexadecimal':
+          resultValue = parseInt(inputValue, 16);
+          break;
+      }
+
+      let convertedValue;
+
+      switch (to) {
+        case 'binary':
+          convertedValue = resultValue.toString(2);
+          break;
+        case 'decimal':
+          convertedValue = resultValue.toString(10);
+          break;
+        case 'octal':
+          convertedValue = resultValue.toString(8);
+          break;
+        case 'hexadecimal':
+          convertedValue = resultValue.toString(16).toUpperCase();
+          break;
+      }
+
+      if (digitGroupingEnabled && (to === 'binary' || to === 'octal' || to === 'hexadecimal')) {
+        convertedValue = addDigitGrouping(convertedValue);
+      }
+
+      document.getElementById('result').innerHTML = `<div id="convertedValueBox">Converted Value: ${convertedValue}</div>`;
+    }
+
+    function resetFields() {
+      document.getElementById('inputValue').value = '';
+      document.getElementById('result').innerHTML = '';
+    }
+
+    function copyToClipboard() {
+      const resultText = document.getElementById('result').innerText;
+      const tempInput = document.createElement('textarea');
+      tempInput.value = resultText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      alert('Copied to clipboard!');
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    function increaseFontSize() {
+      document.body.style.fontSize = 'larger';
+    }
+
+    function decreaseFontSize() {
+      document.body.style.fontSize = 'smaller';
+    }
+
+    function toggleDigitGrouping() {
+      digitGroupingEnabled = !digitGroupingEnabled;
+      convertNumber();
+    }
+
+    function addDigitGrouping(number) {
+      if (number.length <= 4) return number;
+      return number.replace(/\B(?=(\d{4})+(?!\d))/g, " ");
+    }
+
+    function swapConversion() {
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+      document.getElementById('from').value = to;
+      document.getElementById('to').value = from;
+      convertNumber();
+    }
+  </script>
+</body>
+</html>
